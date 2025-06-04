@@ -44,8 +44,8 @@
       const precoBTC = parseFloat(data.price);
       const valorBTC = (valorBRL / precoBTC).toFixed(8);
 
-      // 2. Consulta ao backend (ajuste a URL abaixo com a sua do Render)
-      const enderecoResponse = await fetch("https://SEU-PROJETO.onrender.com/api/endereco-btc");
+      // 2. Consulta ao backend no Railway (substitua pela URL real da sua API Railway)
+      const enderecoResponse = await fetch("https://binance-api-ma80.up.railway.app/api/endereco-btc");
       const enderecoData = await enderecoResponse.json();
       const endereco = enderecoData.endereco;
 
