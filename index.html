@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento com Criptomoeda</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 500px; margin: auto; }
+    .qr-section { text-align: center; margin-top: 30px; }
+    input, button { padding: 10px; margin: 10px 0; width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Escolha a forma de pagamento</h2>
+    <select id="metodo-pagamento">
+      <option value="cartao">Cartão de Crédito</option>
+      <option value="pix">Pix</option>
+      <option value="cripto">Criptomoeda</option>
+    </select>
+
+    <div id="cripto-section" style="display: none;">
+      <label for="valor">Valor em BRL:</label>
+      <input type="number" id="valor" placeholder="Digite o valor em reais">
+      <button onclick="gerarQRCode()">Gerar QR Code de Pagamento</button>
+
+      <div class="qr-section" id="qr-result"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('metodo-pagamento').addEventListener('change', function () {
+      document.getElementById('cripto-section').style.display = this.value === 'cripto' ? 'block' : 'none';
+    });
+
+    async function gerarQRCode() {
+      const valorBRL = parseFloat(document.getElementById('valor').value);
+      if (!valorBRL || valorBRL <= 0) return alert("Informe um valor válido em BRL");
+
+      // 1. Consultar a API da Binance para cotar o valor do BTC/BRL
+      const response = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCBRL");
+      const data = await response.json();
+      const precoBTC = parseFloat(data.price);
+      const valorBTC = (valorBRL / precoBTC).toFixed(8);
+
+      // 2. Endereço fixo ou gerado previamente (aqui simulado)
+      const endereco = "bc1qexemplo1234567890abcdefg...";
+
+      // 3. Gerar o QR Code
+      const qr = `bitcoin:${endereco}?amount=${valorBTC}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=200x200`;
+
+      // 4. Exibir resultado
+      document.getElementById('qr-result').innerHTML = `
+        <p>Envie <strong>${valorBTC} BTC</strong> para o endereço abaixo:</p>
+        <img src="${qrUrl}" alt="QR Code">
+        <p>${endereco}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
